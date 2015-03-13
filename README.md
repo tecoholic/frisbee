@@ -1,18 +1,12 @@
 # Frisbee Player Tracking
--------------------------
-
 The purpose of this document is to track the frisbee as the game progresses through the hands of the players.
 
 ## Player Identification
-------------------------
-
 Each player is represented with a 3 letter identifier, which is usually the first three letters of their name.
 
 For a bigger tournament I think the jersy numbers would be more appropriate.
 
 ## Tracking
------------
-
 The frisbee is tracked by writing the identifier followed by a dash(-) and the code of the player who gets the pass.
 
 1. A [\*] is added right after the player's name if the player has dropped the catch and wasted the pass by making a blind throw.
@@ -22,7 +16,6 @@ The frisbee is tracked by writing the identifier followed by a dash(-) and the c
 
 
 ## Economy
-==========
 *Only considering the offence*
 
 Points are the money. They are earned by passes and spent by drops and fouls.
@@ -39,8 +32,6 @@ With the above costs in place:
 * When a blind throw is saved - thrower +1/3 and catcher +2/3
 
 ## Effectiveness
-----------------
-
 The whole team's effectiveness is decided by the amount of points they have earned in the end.
 
 Each person's effective contribution is calculated by cumulative addition of the cost involved in each action througout the game and equating it to the points.
