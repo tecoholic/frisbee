@@ -21,4 +21,4 @@ class Game:
 class Passes:
     def __init__(self, pstr, gid):
         self.string = pstr
-        self,game_id = gid
+        self.game_id = gid
