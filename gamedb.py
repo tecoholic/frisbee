@@ -19,12 +19,14 @@ def add_team(conn, name):
     ''' Add a new team to the database '''
     c = conn.cursor()
     c.execute("INSERT INTO teams VALUES (NULL, ?, ?, ?, ?, ?, ?, ?)",(name, 0, 0, 0, 0, 0, 0))
+    return c.lastrowid
 
 def add_player(conn, player):
     '''Add a new player to the database'''
     c = conn.cursor()
     c.execute('''INSERT INTO players VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?)''',
             (player.name, player.code, player.team_id, 0, 0, 0, 0, 0))
+    return c.lastrowid
 
 def add_game(conn, game):
     '''Add a new game with its result into the db'''
@@ -32,12 +34,14 @@ def add_game(conn, game):
     c.execute('''INSERT INTO games VALUES (NULL, ?, ?, ?, ?)''',
             (game.team1_id, game.team2_id, game.point1, game.point2))
     update_team_scores(conn, game)  # Trigger update in teams table
+    return c.lastrowid
 
 def add_pass_string(conn, passes):
     '''Add a new pass string to the db'''
     c = conn.cursor()
     c.execute('''INSERT INTO passes VALUES (NULL, ?, ?, ?)''',
             (passes.string, passes.game_id, passes.team_id))
+    return c.lastrowid
 
 # ----------------------------------------------------------------------------#
 #                       Functions related to TEAM                             #
@@ -58,7 +62,7 @@ def update_team_scores(conn, game):
                 WHERE id = ?;""",(game.point1, game.point2, game.team1_id))
 
         c.execute("""UPDATE teams SET g_played = g_played + 1, g_lost = g_lost +1,
-                p_for = p_for + ?, p_against = p_against + ?, WHERE id = ?;""",
+                p_for = p_for + ?, p_against = p_against + ? WHERE id = ?;""",
                 (game.point2, game.point1, game.team2_id))
     else:
         c.execute("""UPDATE teams SET g_played = g_played + 1,

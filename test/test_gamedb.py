@@ -5,8 +5,8 @@ import sqlite3
 from random import randint
 
 from frisbee import Player, Game, Passes
-from gamedb import createdb, add_team, add_player, add_game, \
-        add_pass_string
+from gamedb import createdb, add_team, add_player, add_game, add_pass_string,\
+        update_team_scores
 
 class GameDBTestCase(unittest.TestCase):
     """Tests the fucntions of gamedb.py"""
@@ -66,6 +66,31 @@ class GameDBTestCase(unittest.TestCase):
         self.c.execute("SELECT pass_string FROM passes WHERE game_id=0 AND team_id=1")
         self.assertEqual(self.c.fetchone()[0], "MAK-SAM-DOP*")
 
+    def test_is_team_scores_updated(self):
+        """Test update_team_scores() """
+        t1 = add_team(self.conn, "team1")
+        t2 = add_team(self.conn, "team2")
+        # A drawn match
+        game = Game(t1,t2,0,0)
+        update_team_scores(self.conn, game)
+        self.c.execute("SELECT g_played, g_won, g_lost, g_drawn, p_for, p_against FROM teams WHERE id=?", (t1,))
+        self.assertTupleEqual( self.c.fetchone(), (1, 0, 0, 1, 0, 0))
+        self.c.execute("SELECT g_played, g_won, g_lost, g_drawn, p_for, p_against FROM teams WHERE id=?", (t2,))
+        self.assertTupleEqual( self.c.fetchone(), (1, 0, 0, 1, 0, 0))
+        # A match won by Team1
+        game = Game(t1,t2,1,0)
+        update_team_scores(self.conn, game)
+        self.c.execute("SELECT g_played, g_won, g_lost, g_drawn, p_for, p_against FROM teams WHERE id=?", (t1,))
+        self.assertTupleEqual( self.c.fetchone(), (2, 1, 0, 1, 1, 0))
+        self.c.execute("SELECT g_played, g_won, g_lost, g_drawn, p_for, p_against FROM teams WHERE id=?", (t2,))
+        self.assertTupleEqual( self.c.fetchone(), (2, 0, 1, 1, 0, 1))
+        # A match won by Team2
+        game = Game(t1,t2,1,2)
+        update_team_scores(self.conn, game)
+        self.c.execute("SELECT g_played, g_won, g_lost, g_drawn, p_for, p_against FROM teams WHERE id=?", (t1,))
+        self.assertTupleEqual( self.c.fetchone(), (3, 1, 1, 1, 2, 2))
+        self.c.execute("SELECT g_played, g_won, g_lost, g_drawn, p_for, p_against FROM teams WHERE id=?", (t2,))
+        self.assertTupleEqual( self.c.fetchone(), (3, 1, 1, 1, 2, 2))
 
 if __name__ == "__main__":
     unittest.main()
