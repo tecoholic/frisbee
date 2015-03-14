@@ -122,6 +122,30 @@ class TeamDBTestCase(DBTestCase):
         self.assertEqual(1, draws(self.conn,t1))
         self.assertEqual(1, draws(self.conn,t2))
 
+    def test_is_team_stats(self):
+        """Test for team_stats()"""
+        t1 = add_team(self.conn, "team1")
+        t2 = add_team(self.conn, "team2")
+        game = Game(t1,t2, 8, 3)
+        add_game(self.conn, game)
+        self.assertDictEqual( {"name" : "team1",
+            "g_played" : 1,
+            "g_won" : 1,
+            "g_lost" : 0,
+            "g_drawn": 0,
+            "p_for": 8,
+            "p_against": 3
+            }, team_stats(self.conn, t1))
+        self.assertDictEqual( {"name" : "team2",
+            "g_played" : 1,
+            "g_won" : 0,
+            "g_lost" : 1,
+            "g_drawn": 0,
+            "p_for": 3,
+            "p_against": 8
+            }, team_stats(self.conn, t2))
+
+
 
 if __name__ == "__main__":
     unittest.main()
