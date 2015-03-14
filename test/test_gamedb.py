@@ -5,7 +5,8 @@ import sqlite3
 from random import randint
 
 from frisbee import Player, Game, Passes
-from gamedb import createdb, add_team, add_player, add_game
+from gamedb import createdb, add_team, add_player, add_game, \
+        add_pass_string
 
 class GameDBTestCase(unittest.TestCase):
     """Tests the fucntions of gamedb.py"""
@@ -57,6 +58,13 @@ class GameDBTestCase(unittest.TestCase):
         add_game(self.conn, game)
         self.c.execute("SELECT team2_id FROM games WHERE point1=1 AND point2=3")
         self.assertEqual(self.c.fetchone()[0], 10)
+
+    def test_is_passes_added(self):
+        """Test add_pass_string() """
+        passes = Passes("MAK-SAM-DOP*", 0, 1)
+        add_pass_string(self.conn, passes)
+        self.c.execute("SELECT pass_string FROM passes WHERE game_id=0 AND team_id=1")
+        self.assertEqual(self.c.fetchone()[0], "MAK-SAM-DOP*")
 
 
 if __name__ == "__main__":

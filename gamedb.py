@@ -36,8 +36,8 @@ def add_game(conn, game):
 def add_pass_string(conn, passes):
     '''Add a new pass string to the db'''
     c = conn.cursor()
-    c.execute('''INSERT INTO passes VALUES (NULL, ?, ?)''',
-            (passes.string, passes.game_id))
+    c.execute('''INSERT INTO passes VALUES (NULL, ?, ?, ?)''',
+            (passes.string, passes.game_id, passes.team_id))
 
 # ----------------------------------------------------------------------------#
 #                       Functions related to TEAM                             #
@@ -87,14 +87,15 @@ def createdb(dbname='frisbee'):
             p_code TEXT,
             team_id INTEGER, throws INTEGER, drops INTEGER,
             snatches INTEGER, fouls INTEGER, catches INTEGER,
-            FOREIGN KEY(team_id) REFERENCES team(id) ) ''')
+            FOREIGN KEY(team_id) REFERENCES teams(id) ) ''')
     c.execute('''CREATE TABLE games (id INTEGER PRIMARY KEY,
             team1_id INTEGER, team2_id INTEGER, point1 INTEGER, point2 INTEGER,
-            FOREIGN KEY(team1_id) REFERENCES team(id),
-            FOREIGN KEY(team2_id) REFERENCES team(id))''')
+            FOREIGN KEY(team1_id) REFERENCES teams(id),
+            FOREIGN KEY(team2_id) REFERENCES teams(id))''')
     c.execute('''CREATE TABLE passes (id INTEGER PRIMARY KEY, pass_string TEXT,
-            game_id INTEGER,
-            FOREIGN KEY(game_id) REFERENCES game(id))''')
+            game_id INTEGER, team_id INTEGER,
+            FOREIGN KEY(game_id) REFERENCES games(id),
+            FOREIGN KEY(team_id) REFERENCES teams(id))''')
     conn.commit()
     conn.close()
 

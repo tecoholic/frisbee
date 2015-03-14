@@ -19,6 +19,7 @@ class Game:
         self.point2 = p2
 
 class Passes:
-    def __init__(self, pstr, gid):
+    def __init__(self, pstr, gid, tid):
         self.string = pstr
         self.game_id = gid
+        self.team_id = tid
