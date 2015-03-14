@@ -110,6 +110,12 @@ def update_team_scores(conn, game):
                 (game.point1, game.point2, game.team1_id))
     conn.commit() # Safe to commit at this point
 
+def games_played(conn, team_id):
+    """Returns the number of games played by a team"""
+    c = conn.cursor()
+    c.execute("SELECT g_played FROM teams WHERE id=?", (team_id,))
+    return c.fetchone()[0]
+
 def wins(conn,team_id):
     """Returns the no of wins by a team"""
     c = conn.cursor()
@@ -130,22 +136,45 @@ def draws(conn, team_id):
 
 def team_stats(conn, team_id):
     """Returns the teams statistics as a dictionary"""
+    conn.row_factory = sqlite3.Row
     c = conn.cursor()
     c.execute("SELECT * FROM teams WHERE id=?", (team_id,))
     stat = c.fetchone()
-    return {"name" : stat[1],
-            "g_played" : stat[2],
-            "g_won" : stat[3],
-            "g_lost" : stat[4],
-            "g_drawn": stat[5],
-            "p_for": stat[6],
-            "p_against": stat[7]
-            }
+    return dict(zip(stat.keys(), stat))
 
 # --------------------------------------------------------------------------- #
 #                       Player related functions                              #
 # --------------------------------------------------------------------------- #
+def player_count(conn, team_id):
+    """Returns the number of players associated with a particular team"""
+    c = conn.cursor()
+    c.execute("SELECT id FROM players WHERE team_id=?", (team_id,))
+    return len(c.fetchall())
 
+def player_stats(conn, player_id):
+    """Returns the statistics of the player id"""
+    conn.row_factory = sqlite3.Row
+    c = conn.cursor()
+    c.execute("SELECT * FROM players WHERE id=?", (player_id,))
+    stats = c.fetchone()
+    return dict(zip(stats.keys(), stats))
+
+def player_fullname(conn, player_code):
+    """Returns the full name of the player when the code is supplied"""
+    c = conn.cursor()
+    c.execute("SELECT name FROM player WHERE p_code=?", (player_code,))
+    return c.fetchone()[0]
+
+
+# --------------------------------------------------------------------------- #
+#                       Game related functions                                #
+# --------------------------------------------------------------------------- #
+def game_string(conn, game_id):
+    """Returns the pass strings of the given game"""
+    conn.row_factory = sqlite3.Row
+    c = conn.cursor()
+    c.execute("SELECT pass_string, team_id FROM passes WHERE game_id=?", (game_id,))
+    return [dict(zip(g.keys(), g)) for g in c.fetchall()]
 
 
 if __name__ == "__main__":

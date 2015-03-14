@@ -134,7 +134,8 @@ class TeamDBTestCase(DBTestCase):
             "g_lost" : 0,
             "g_drawn": 0,
             "p_for": 8,
-            "p_against": 3
+            "p_against": 3,
+            "id" : t1
             }, team_stats(self.conn, t1))
         self.assertDictEqual( {"name" : "team2",
             "g_played" : 1,
@@ -142,9 +143,29 @@ class TeamDBTestCase(DBTestCase):
             "g_lost" : 1,
             "g_drawn": 0,
             "p_for": 3,
-            "p_against": 8
+            "p_against": 8,
+            "id" : t2
             }, team_stats(self.conn, t2))
 
+class PlayerDBTestCase(DBTestCase):
+    """Tests for the player related functions"""
+    def test_count_of_players(self):
+        """Tests player_count()"""
+        pnames = ["A Player", "B Player", "C Player", "Y Player", "Z Player"]
+        map(add_player, [self.conn]*5, map(Player, pnames, [0,0,0,1,1]))
+        self.assertEqual( player_count(self.conn, 0), 3)
+        self.assertEqual( player_count(self.conn, 1), 2)
+
+class GameDBTestCase(DBTestCase):
+    """Tests realted to functions dealing with games"""
+    def test_is_game_string(self):
+        """Test game_string()"""
+        p1 = Passes("HE-SHE-IT-THEY*", 0, 1)
+        p2 = Passes("I-YOU-WE*", 0, 2)
+        map(add_pass_string, [self.conn]*2, [p1,p2])
+        res = [{"pass_string":p1.string, "team_id" : p1.team_id},
+                {"pass_string":p2.string, "team_id" : p2.team_id}]
+        self.assertListEqual(game_string(self.conn, 0), res)
 
 
 if __name__ == "__main__":
