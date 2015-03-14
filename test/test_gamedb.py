@@ -7,32 +7,34 @@ from random import randint
 from frisbee import Player, Game, Passes
 from gamedb import *
 
-class GameDBTestCase(unittest.TestCase):
-    """Tests the fucntions of gamedb.py"""
+class DBTestCase(unittest.TestCase):
+    """Base class for the different test cases"""
 
     def setUp(self):
         # Creates a fresh db for each test - independence
-        self.__dbname = "/tmp/test_"+str(randint(1,1000))+".db"
-        createdb(self.__dbname)
-        self.conn = sqlite3.connect(self.__dbname)
+        self.dbname = "/tmp/test_"+str(randint(1,1000))+".db"
+        createdb(self.dbname)
+        self.conn = sqlite3.connect(self.dbname)
         self.c = self.conn.cursor()
 
     def tearDown(self):
         # Close the db after each test and delete the file
         self.conn.close()
-        os.remove(self.__dbname)
+        os.remove(self.dbname)
 
+
+class AddDataTestCase(DBTestCase):
+    """Tests the fucntions of gamedb.py"""
     def test_is_db_created(self):
         """Tests whether createdb() has done its  job"""
-        dbname = self.__dbname
-        self.assertTrue(os.path.isfile(dbname), msg="File "+dbname+" does NOT exist.")
+        self.assertTrue(os.path.isfile(self.dbname), msg="File "+self.dbname+" does NOT exist.")
 
         self.c.execute("SELECT name FROM sqlite_master WHERE type='table'")
         tables = [row[0] for row in self.c]
         # Assert the tables have been created
         self.assertEqual(len(tables), 4,
                 msg="OMG! Where are the 4 tables we ordered. We have "
-                + str(len(tables))+"in "+dbname)
+                + str(len(tables))+"in "+self.dbname)
         self.assertTrue("teams" in tables)
         self.assertTrue("games" in tables)
         self.assertTrue("players" in tables)
@@ -65,6 +67,8 @@ class GameDBTestCase(unittest.TestCase):
         self.c.execute("SELECT pass_string FROM passes WHERE game_id=0 AND team_id=1")
         self.assertEqual(self.c.fetchone()[0], "MAK-SAM-DOP*")
 
+class TeamDBTestCase(DBTestCase):
+    """Test case to test Team Specific wrapper functions"""
     def test_is_team_scores_updated(self):
         """Test update_team_scores() """
         t1 = add_team(self.conn, "team1")
