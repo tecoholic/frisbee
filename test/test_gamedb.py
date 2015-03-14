@@ -5,8 +5,7 @@ import sqlite3
 from random import randint
 
 from frisbee import Player, Game, Passes
-from gamedb import createdb, add_team, add_player, add_game, add_pass_string,\
-        update_team_scores
+from gamedb import *
 
 class GameDBTestCase(unittest.TestCase):
     """Tests the fucntions of gamedb.py"""
@@ -91,6 +90,34 @@ class GameDBTestCase(unittest.TestCase):
         self.assertTupleEqual( self.c.fetchone(), (3, 1, 1, 1, 2, 2))
         self.c.execute("SELECT g_played, g_won, g_lost, g_drawn, p_for, p_against FROM teams WHERE id=?", (t2,))
         self.assertTupleEqual( self.c.fetchone(), (3, 1, 1, 1, 2, 2))
+
+    def test_is_wins(self):
+        """Tests wins() for a team"""
+        t1 = add_team(self.conn, "team1")
+        t2 = add_team(self.conn, "team2")
+        game = Game(t1,t2, 1, 0)
+        add_game(self.conn, game)
+        self.assertEqual(1, wins(self.conn,t1))
+        self.assertEqual(0, wins(self.conn,t2))
+
+    def test_is_losses(self):
+        """Tests losses() for a team"""
+        t1 = add_team(self.conn, "team1")
+        t2 = add_team(self.conn, "team2")
+        game = Game(t1,t2, 1, 0)
+        add_game(self.conn, game)
+        self.assertEqual(0, losses(self.conn,t1))
+        self.assertEqual(1, losses(self.conn,t2))
+
+    def test_is_draws(self):
+        """Test draws() for a team"""
+        t1 = add_team(self.conn, "team1")
+        t2 = add_team(self.conn, "team2")
+        game = Game(t1,t2, 5, 5)
+        add_game(self.conn, game)
+        self.assertEqual(1, draws(self.conn,t1))
+        self.assertEqual(1, draws(self.conn,t2))
+
 
 if __name__ == "__main__":
     unittest.main()
