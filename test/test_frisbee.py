@@ -69,5 +69,14 @@ class AnalysisTestCase(unittest.TestCase):
                 "PL2" : self.__get_cred_dict(1,0,0,0,0)}
         self.assertDictEqual(analyse_game_string(gs), res)
 
+    def test_for_realworld(self):
+        """Tests a real world multiline string"""
+        gs = 'DHA-RIY*\nRIY-DHA*\nDHA-RIY\nDHA-RIY-SHE*\nDHA-RIY-SHE-DHA*\nDHA-SHE-RIY*\nDHA*\n'
+        res = {"DHA": self.__get_cred_dict(2,3,5,0,0),
+                "RIY": self.__get_cred_dict(5,2,4,0,0),
+                "SHE": self.__get_cred_dict(3,1,2,0,0),
+                }
+        self.assertDictEqual(analyse_game_string(gs), res)
+
 if __name__ == "__main__":
     unittest.main()

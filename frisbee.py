@@ -53,8 +53,24 @@ def analyse_game_string(gs):
                 playerCreds[players.index(act.sub('', hand))]["drop"] += 1
             elif re.search('\(F\)', hand):
                 playerCreds[players.index(act.sub('', hand))]["foul"] += 1
-            elif not re.search('\(P\)', hand):
+            elif not re.search('\(P\)', hand) and hand:
                 playerCreds[players.index(act.sub('', hand))]["throw"] += 1
     return dict(zip(players, playerCreds))
 
+def parse_gamefile(gfile):
+    """Parses the given text file containing game data"""
+    t = re.compile(r"\s*(?P<team>[^:]+)\s*:\s*(?P<name>.*?)\s*$")
+    vals = []
+    keys = ["team1", "string1", "team2", "string2"]
+    with open(gfile,"r") as f:
+        passStr = ""
+        for line in f:
+            if t.match(line):
+                vals.append( t.match(line).group('name') )
+            elif re.match("^\n|\Z", line):
+                vals.append( passStr )
+                passStr = ''
+            else:
+                passStr += line
+    return dict(zip(keys,vals))
 
