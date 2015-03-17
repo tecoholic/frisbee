@@ -78,5 +78,12 @@ class AnalysisTestCase(unittest.TestCase):
                 }
         self.assertDictEqual(analyse_game_string(gs), res)
 
+class PointsTestCase(unittest.TestCase):
+    """Check whether the points are calculated correctly"""
+    def test_point_count(self):
+        """Test for get_points()"""
+        gs = 'ABS-DSA-POT(P)\nADS-HSD*\nHJS-AUD-HSD*\nPSD-ASD(P)\n'
+        self.assertEqual(get_points(gs), 2)
+
 if __name__ == "__main__":
     unittest.main()

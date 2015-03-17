@@ -24,6 +24,11 @@ class Passes:
         self.game_id = gid
         self.team_id = tid
 
+def get_points(gs):
+    """Counts the points from the game string and returns the points"""
+    return len(re.findall('\(P\)$', gs, re.MULTILINE))
+
+
 def analyse_game_string(gs):
     passSeq = gs.split("\n")
     players = []
