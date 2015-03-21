@@ -22,6 +22,18 @@ class DBTestCase(unittest.TestCase):
         self.conn.close()
         os.remove(self.dbname)
 
+class GetDataTestCase(DBTestCase):
+    """Tests for data GET functions in gamebd.py"""
+    def test_is_team_id_right(self):
+        """Tests whether correct team_id is returned"""
+        a_id = add_team(self.conn, "TEST TEAM A")
+        b_id = add_team(self.conn, "test team b")
+        c_id = add_team(self.conn, "Test Team C")
+        self.assertEqual(team_id(self.conn, "test team a"), a_id)
+        self.assertEqual(team_id(self.conn, "TEST TEAM B"), b_id)
+        self.assertEqual(team_id(self.conn, "Test Team C"), c_id)
+        self.assertEqual(team_id(self.conn, "Team D"), -1)
+
 
 class AddDataTestCase(DBTestCase):
     """Tests the fucntions of gamedb.py"""

@@ -82,6 +82,13 @@ def add_pass_string(conn, passes):
 # ----------------------------------------------------------------------------#
 #                       Functions related to TEAM                             #
 # ----------------------------------------------------------------------------#
+def team_id(conn, team):
+    """Returns the id of the team name. Or -1 if no team exists"""
+    c = conn.cursor()
+    c.execute('SELECT id FROM teams WHERE name LIKE ?', (team,))
+    team_id = c.fetchone()
+    return team_id[0] if team_id else -1
+
 def update_team_scores(conn, game):
     '''Updates the games played related data in teams table'''
     c = conn.cursor()
@@ -175,6 +182,7 @@ def game_string(conn, game_id):
     c = conn.cursor()
     c.execute("SELECT pass_string, team_id FROM passes WHERE game_id=?", (game_id,))
     return [dict(zip(g.keys(), g)) for g in c.fetchall()]
+
 
 
 if __name__ == "__main__":
