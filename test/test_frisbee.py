@@ -85,5 +85,27 @@ class PointsTestCase(unittest.TestCase):
         gs = 'ABS-DSA-POT(P)\nADS-HSD*\nHJS-AUD-HSD*\nPSD-ASD(P)\n'
         self.assertEqual(get_points(gs), 2)
 
+class ParserTestCase(unittest.TestCase):
+    """Test for parse_game_file() in frisbee.py """
+    def test_is_file_empty(self):
+        """Tests whether the function throws an error if the file has no data"""
+        with self.assertRaises(ParsingError):
+            parse_gamefile("test/data/empty_game.txt")
+
+    def test_is_file_corrupt(self):
+        """Tests whether the fucntion throws an error for insufficient data"""
+        with self.assertRaises(ParsingError):
+            parse_gamefile("test/data/1team_game.txt")
+
+    def test_is_parsing_correct(self):
+        """Tests whether the function returns the expected result after parsing"""
+        resp = parse_gamefile("test/data/full_game.txt")
+        data = {"team1" : "TEAM A", "team2" : "TEAM B",
+                "points1" : 0, "points2" : 1,
+                "string1" : "JUS*\nJUS-KAJ*\nSUR*\n",
+                "string2" : "DAN-NIM*\nDAN-NIM(P)\n"
+                }
+        self.assertDictEqual(resp, data)
+
 if __name__ == "__main__":
     unittest.main()

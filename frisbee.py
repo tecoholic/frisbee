@@ -1,4 +1,5 @@
 import re
+from gamedb import *
 # Class definitions - to be used as data types
 
 class Player:
@@ -24,10 +25,15 @@ class Passes:
         self.game_id = gid
         self.team_id = tid
 
+class ParsingError(Exception):
+    def __init__(self, value):
+        self.value = value
+    def __str__(self, value):
+        return repr(self.value)
+
 def get_points(gs):
     """Counts the points from the game string and returns the points"""
     return len(re.findall('\(P\)$', gs, re.MULTILINE))
-
 
 def analyse_game_string(gs):
     passSeq = gs.split("\n")
@@ -66,7 +72,7 @@ def parse_gamefile(gfile):
     """Parses the given text file containing game data"""
     t = re.compile(r"\s*(?P<team>[^:]+)\s*:\s*(?P<name>.*?)\s*$")
     vals = []
-    keys = ["team1", "string1", "team2", "string2"]
+    keys = ["team1", "string1", "points1", "team2", "string2", "points2"]
     with open(gfile,"r") as f:
         passStr = ""
         for line in f:
@@ -74,8 +80,34 @@ def parse_gamefile(gfile):
                 vals.append( t.match(line).group('name') )
             elif re.match("^\n|\Z", line):
                 vals.append( passStr )
+                vals.append( get_points(passStr) )
                 passStr = ''
             else:
                 passStr += line
-    return dict(zip(keys,vals))
+    if not len(vals):
+        raise ParsingError("Empty file")
+    elif len(vals) < 6:
+        raise ParsingError("Insufficient Data in File")
+    else:
+        return dict(zip(keys,vals))
+
+def import_from_file(filename):
+    """Imports details from a game sheet file into the database"""
+    conn = open_db()
+    # get the game result and update the game
+    data = parse_gamefile(filename)
+    game_id = -1
+    t1 = team_id(data["team1"])
+    t2 = team_id(data["team2"])
+    p1 = data["points1"]
+    p2 = data["points2"]
+    if t1 != -1 and t2 != -1:
+        game_id = add_game(conn, Game(t1,t2,p1,p2))
+
+    # get the game id and update the pass string
+    if game_id != -1:
+        add_pass_string(Passes(data["string1"], game_id, t1))
+        add_pass_string(Passes(data["string2"], game_id, t2))
+    commit_data()
+    close_db()
 
