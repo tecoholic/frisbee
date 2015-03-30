@@ -91,7 +91,7 @@ def parse_gamefile(gfile):
     else:
         return dict(zip(keys,vals))
 
-def import_from_file(filename):
+def import_game_data(filename):
     """Imports details from a game sheet file into the database"""
     conn = open_db()
     # get the game result and update the game
