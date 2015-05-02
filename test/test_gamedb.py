@@ -180,5 +180,5 @@ class GameDBTestCase(DBTestCase):
         self.assertListEqual(game_string(self.conn, 0), res)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__": # pragma: no cover
     unittest.main()

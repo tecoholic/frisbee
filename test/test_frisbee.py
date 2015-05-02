@@ -107,5 +107,5 @@ class ParserTestCase(unittest.TestCase):
                 }
         self.assertDictEqual(resp, data)
 
-if __name__ == "__main__":
+if __name__ == "__main__": # pragma: no cover
     unittest.main()
