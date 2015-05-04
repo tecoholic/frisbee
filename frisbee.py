@@ -70,7 +70,7 @@ def analyse_game_string(gs):
 
 def parse_gamefile(gfile):
     """Parses the given text file containing game data"""
-    t = re.compile(r"\s*(?P<team>[^:]+)\s*:\s*(?P<name>.*?)\s*$")
+    t = re.compile(r"^(?P<team>.+):\s+(?P<name>.+)$")
     vals = []
     keys = ["team1", "string1", "points1", "team2", "string2", "points2"]
     with open(gfile,"r") as f:
